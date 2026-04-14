@@ -4,3 +4,6 @@ opencv-python
 mediapipe
 numpy
 scikit-learn
+streamlit
+opencv-python-headless==4.8.0.76
+numpy
