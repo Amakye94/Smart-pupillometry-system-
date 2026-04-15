@@ -65,8 +65,7 @@ numpy<2
 
 ---
 
-## ⚠️ Disclaimer
-
+##NB
 This project is for educational purposes only.
 Not for real medical diagnosis.
 
@@ -74,4 +73,4 @@ Not for real medical diagnosis.
 
 ## 👨‍💻 Authors  Pupils Team Nexus
 
-Ebenezer Asamoah Amakye, Eric Jnr Ampah, Moses Oluwaseye moses.
+Ebenezer Asamoah Amakye, supported by Eric Jnr Ampah, Moses Oluwaseye moses.
