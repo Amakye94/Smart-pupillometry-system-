@@ -13,13 +13,21 @@ def is_valid_pupil(data):
     if data is None:
         return False
 
+    # Basic checks
     if data.get("pupil_area", 0) <= 0:
         return False
 
     if data.get("radius", 0) <= 0:
         return False
 
-    if data.get("radius", 0) > 200:
+    # ✅ Use normalized value instead of absolute radius
+    normalized = data.get("normalized_radius", None)
+
+    if normalized is None:
+        return False
+
+    # normalized radius should be between 0 and 1
+    if normalized <= 0 or normalized > 1:
         return False
 
     return True
