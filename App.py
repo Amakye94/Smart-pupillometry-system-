@@ -3,7 +3,27 @@ from backend.pupil import detect_pupil
 import tempfile
 import sys
 import os
+
 sys.path.append(os.path.abspath("."))
+
+# -------------------------------
+# ✅ VALIDATION FUNCTION
+# -------------------------------
+def is_valid_pupil(data):
+    if data is None:
+        return False
+
+    if data.get("pupil_area", 0) <= 0:
+        return False
+
+    if data.get("radius", 0) <= 0:
+        return False
+
+    if data.get("radius", 0) > 200:
+        return False
+
+    return True
+
 
 # Page config
 st.set_page_config(page_title="Smart Pupillometry", layout="centered")
@@ -11,9 +31,7 @@ st.set_page_config(page_title="Smart Pupillometry", layout="centered")
 # 🎨 STYLE
 st.markdown("""
     <style>
-        body {
-            background-color: #0E1117;
-        }
+        body { background-color: #0E1117; }
 
         .title {
             text-align: center;
@@ -63,12 +81,6 @@ st.markdown("""
             font-weight: bold;
             font-size: 18px;
         }
-
-        .btn {
-            display: flex;
-            justify-content: center;
-            margin-top: 10px;
-        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -82,17 +94,32 @@ uploaded_file = st.file_uploader("📸 Upload an eye image", type=["jpg", "jpeg"
 if uploaded_file:
     st.image(uploaded_file, caption="Uploaded Image", width=300)
 
-    # 🔥 ANALYZE BUTTON (IMPORTANT UX FIX)
     if st.button("🔍 Analyze"):
-        
+
         # Save temp file
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
             tmp.write(uploaded_file.getvalue())
             temp_path = tmp.name
 
-        # 🔥 DIRECT CALL (NO BACKEND)
+        # Run detection
         data = detect_pupil(temp_path)
 
+        # -------------------------------
+        # 🚨 VALIDATION STEP
+        # -------------------------------
+        if not is_valid_pupil(data):
+            st.error("❌ No valid pupil detected. Please upload a clear eye image.")
+            st.stop()
+
+        # Check expected output structure
+        required_keys = ["pupil_area", "radius", "normalized_radius", "status", "priority"]
+        if not all(key in data for key in required_keys):
+            st.error("⚠️ Invalid analysis result. Try another image.")
+            st.stop()
+
+        # -------------------------------
+        # 📊 DISPLAY RESULTS
+        # -------------------------------
         st.write("")
         st.markdown("### 📊 Analysis Result")
 
@@ -109,24 +136,8 @@ if uploaded_file:
             <p><b>Normalized Size:</b> {data['normalized_radius']}</p>
             <p><b>Status:</b> {data['status']}</p>
             <br>
-            <div class="{priority_class[data['priority']]}">
+            <div class="{priority_class.get(data['priority'], 'low')}">
                 🚨 {data['priority']} PRIORITY
             </div>
         </div>
         """, unsafe_allow_html=True)
-        def safe_predict(model, features):
-    try:
-        # Get probabilities
-        probs = model.predict_proba([features])[0]
-        confidence = max(probs)
-
-        # 🔹 Confidence threshold (tune this: 0.6–0.8)
-        if confidence < 0.7:
-            return "Invalid input (low confidence)", confidence
-
-        # 🔹 Normal prediction
-        prediction = model.predict([features])[0]
-        return prediction, confidence
-
-    except Exception as e:
-        return "Invalid input (error in processing)", 0
