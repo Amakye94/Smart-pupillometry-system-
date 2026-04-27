@@ -74,3 +74,4 @@ Not for real medical diagnosis.
 ## 👨‍💻 Authors  Pupils Team Nexus
 
 Ebenezer Asamoah Amakye, supported by Eric Jnr Ampah, Moses Oluwaseye moses.
+Azum Gloria
