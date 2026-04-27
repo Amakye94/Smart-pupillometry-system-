@@ -114,3 +114,19 @@ if uploaded_file:
             </div>
         </div>
         """, unsafe_allow_html=True)
+        def safe_predict(model, features):
+    try:
+        # Get probabilities
+        probs = model.predict_proba([features])[0]
+        confidence = max(probs)
+
+        # 🔹 Confidence threshold (tune this: 0.6–0.8)
+        if confidence < 0.7:
+            return "Invalid input (low confidence)", confidence
+
+        # 🔹 Normal prediction
+        prediction = model.predict([features])[0]
+        return prediction, confidence
+
+    except Exception as e:
+        return "Invalid input (error in processing)", 0
